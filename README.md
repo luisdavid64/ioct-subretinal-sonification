@@ -2,8 +2,7 @@
 
 Code for the paper `Physics-Based iOCT Sonification for Real-time Interaction Awareness in Subretinal Injection`, to appear at MICCAI 2026.
 
-Authors: Luis D Reyes Vargas, Veronica Ruozzi, Andrea KM Ross, Shervin Dehghani, Michael Sommersperger, Koorosh Faridpooya, Mohammad Ali Nasseri, Merle Fairhurst, Nassir Navab, Sasan Matinfar
-
+Luis D. Reyes Vargas*, Veronica Ruozzi*, Andrea K. M. Ross, Shervin Dehghani, Michael Sommersperger, Koorosh Faridpooya, Mohammad Ali Nasseri, Merle Fairhurst, Nassir Navab, and Sasan Matinfar
 ## Method Overview
 
 ![Method diagram](./resources/method_diagram.png)
