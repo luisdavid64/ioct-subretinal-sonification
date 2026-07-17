@@ -1,0 +1,318 @@
+package miPhysics.Engine;
+
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.*;
+
+import com.google.gson.*;
+import miPhysics.Engine.InteractionConstants.*;
+import java.util.ArrayList;
+
+public class Phy3DConfig {
+  // ---- Engine core knobs ----
+  public String name;
+  public int dimX, dimY, dimZ;
+  public int neighborSpan;
+  public float dist;
+  public float massRadius;
+  public EnumSet<Bound> bounds;
+
+  // Add globalFriction
+  public float globalFriction = 0.0f;
+
+  // IO (engine-ready lists)
+  public List<String> driverNodes;
+  public List<String> driverNodes_ILM;
+  public List<String> driverNodes_RPE;
+  public List<String> listenerNodes;
+
+  // ---- Processing schema extras ----
+  public String dataDir;
+  public boolean useNormData;
+  public String modelDim;
+  public int numLayers;
+  public int[] numNodesPerLayer;
+  public double[] K;
+  public double[] M;
+  public double[] C;
+  public int acousticScalingFactor;
+  public List<String> contributingPixels;
+  public int[] stiffnessArray;
+  public InteractionType interactionType;
+
+
+  private Phy3DConfig(Builder b) {
+    this.name = b.name;
+    this.dimX = b.dimX; this.dimY = b.dimY; this.dimZ = b.dimZ;
+    this.neighborSpan = b.neighborSpan;
+    this.dist = b.dist;
+    this.massRadius = b.massRadius;
+    this.bounds = b.bounds.clone();
+    this.driverNodes = List.copyOf(b.driverNodes);
+    this.driverNodes_ILM = List.copyOf(b.driverNodes_ILM);
+    this.driverNodes_RPE = List.copyOf(b.driverNodes_RPE);
+    this.listenerNodes = List.copyOf(b.listenerNodes);
+    this.globalFriction = b.globalFriction;
+    this.dataDir = b.dataDir;
+    this.useNormData = b.useNormData;
+    this.modelDim = b.modelDim;
+    this.numLayers = b.numLayers;
+    this.numNodesPerLayer = b.numNodesPerLayer != null ? b.numNodesPerLayer.clone() : new int[0];
+    this.K = b.K != null ? b.K.clone() : new double[numLayers];
+    this.M = b.M != null ? b.M.clone() : new double[numLayers];
+    this.C = b.C != null ? b.C.clone() : new double[numLayers];
+    // Default to a list of 0s with length numLayers
+    this.acousticScalingFactor = b.acousticScalingFactor;
+    this.contributingPixels = List.copyOf(b.contributingPixels);
+    this.stiffnessArray = b.stiffnessArray != null ? b.stiffnessArray.clone() : new int[0];
+    this.interactionType = b.interactionType != null ? b.interactionType : InteractionType.FIRST;
+  }
+
+  public Builder toBuilder() {
+    return new Builder()
+        .name(name)
+        .dims(dimX, dimY, dimZ)
+        .neighborSpan(neighborSpan)
+        .dist(dist)
+        .massRadius(massRadius)
+        .bounds(bounds)
+        .drivers(driverNodes)
+        .driversILM(driverNodes_ILM)
+        .driversRPE(driverNodes_RPE)
+        .listeners(listenerNodes)
+        .dataDir(dataDir)
+        .useNormData(useNormData)
+        .modelDim(modelDim)
+        .numLayers(numLayers)
+        .numNodesPerLayer(numNodesPerLayer)
+        .K(K)
+        .M(M)
+        .C(C)
+        .acousticScalingFactor(acousticScalingFactor)
+        .contributingPixels(contributingPixels)
+        .stiffnessArray(stiffnessArray)
+        .interactionType(interactionType)
+        .globalFriction(globalFriction);
+  }
+
+  public static final class Builder {
+    private String name = "variant";
+    private int dimX = 3, dimY = 3, dimZ = 3;
+    private int neighborSpan = 1;
+    private float dist = 1.0f;
+    private float massRadius = 3.0f;
+    private EnumSet<Bound> bounds = EnumSet.noneOf(Bound.class);
+    private List<String> driverNodes = new ArrayList<>();
+    private List<String> driverNodes_ILM = new ArrayList<>();
+    private List<String> driverNodes_RPE = new ArrayList<>();
+    private List<String> listenerNodes = new ArrayList<>();
+
+    private float globalFriction = 0.0f;
+
+    private String dataDir = "";
+    private boolean useNormData = false;
+    private String modelDim = "1D";
+    private int numLayers = 1;
+    private int[] numNodesPerLayer = new int[0];
+    private double[] K = null;
+    private double[] M = null;
+    private double[] C = null;
+    private int acousticScalingFactor = 1;
+    private List<String> contributingPixels = new ArrayList<>();
+    private int[] stiffnessArray = new int[0];
+    private InteractionType interactionType = InteractionType.FIRST;
+
+    public Builder name(String n){ this.name=n; return this; }
+    public Builder dims(int x,int y,int z){ this.dimX=x; this.dimY=y; this.dimZ=z; return this; }
+    public Builder neighborSpan(int s){ this.neighborSpan=s; return this; }
+    public Builder dist(float d){ this.dist=d; return this; }
+    public Builder massRadius(float r){ this.massRadius=r; return this; }
+    public Builder bounds(EnumSet<Bound> b){ this.bounds= (b.isEmpty()) ? EnumSet.noneOf(Bound.class) : b.clone(); return this; }
+    public Builder addBound(Bound b){ this.bounds.add(b); return this; }
+    public Builder drivers(Collection<String> a){ this.driverNodes = new ArrayList<>(a); return this; }
+    public Builder driversILM(Collection<String> a){ this.driverNodes_ILM = new ArrayList<>(a); return this; }
+    public Builder driversRPE(Collection<String> a){ this.driverNodes_RPE = new ArrayList<>(a); return this; }
+    public Builder listeners(Collection<String> a){ this.listenerNodes = new ArrayList<>(a); return this; }
+
+    public Builder dataDir(String d){ this.dataDir=d; return this; }
+    public Builder useNormData(boolean u){ this.useNormData=u; return this; }
+    public Builder modelDim(String m){ this.modelDim=m; return this; }
+    public Builder numLayers(int n){ this.numLayers=n; return this; }
+    public Builder numNodesPerLayer(int[] a){this.numNodesPerLayer = a != null ? a.clone() : new int[0]; return this;}
+    public Builder K(double[] arr){ this.K = (arr != null) ? arr.clone() : null; return this; }
+    public Builder M(double[] arr){ this.M = (arr != null) ? arr.clone() : null; return this; }
+    public Builder C(double[] arr){ this.C = (arr != null) ? arr.clone() : null; return this; }
+    public Builder acousticScalingFactor(int v){ this.acousticScalingFactor=v; return this; }
+    public Builder contributingPixels(Collection<String> a){ this.contributingPixels = new ArrayList<>(a); return this; }
+    public Builder stiffnessArray(int[] a){ this.stiffnessArray = a!=null?a.clone():new int[0]; return this; }
+    public Builder interactionType(InteractionType t) { this.interactionType = t; return this; }
+    public Builder globalFriction(float f) { this.globalFriction = f; return this; }
+
+    public Phy3DConfig build(){ return new Phy3DConfig(this); }
+  }
+
+  // ---------- JSON IMPORT ----------
+  public static Builder fromProcessingJson(JsonObject root){
+    Builder b = new Builder();
+    if (root.has("data_dir")) b.dataDir(root.get("data_dir").getAsString());
+    if (root.has("use_norm_data")) b.useNormData(root.get("use_norm_data").getAsBoolean());
+    String model = root.has("model") ? root.get("model").getAsString() : "1D";
+    b.modelDim(model);
+
+    // geometry
+    JsonObject g = root.getAsJsonObject("geometry");
+    int dx = g.has("dx") ? g.get("dx").getAsInt() : 1;
+    int dy = g.has("dy") ? g.get("dy").getAsInt() : 1;
+    int dz = g.has("dz") ? g.get("dz").getAsInt() : 1;
+    float distance = g.has("distance") ? (float)g.get("distance").getAsDouble() : 1.0f;
+    float radius   = g.has("massesRadius") ? (float)g.get("massesRadius").getAsDouble() : 3.0f;
+    b.dims(dx,dy,dz).dist(distance).massRadius(radius);
+    if (g.has("numLayers")) b.numLayers(g.get("numLayers").getAsInt());
+    if (g.has("numNodesPerLayer")) {
+      b.numNodesPerLayer(arrayDInt(g.getAsJsonArray("numNodesPerLayer")));
+    }
+    if (g.has("interactionType")) {
+      String it = g.get("interactionType").getAsString();
+      b.interactionType(InteractionType.valueOf(it.toUpperCase()));
+    }
+
+    // bounds
+    if (root.has("bounds")) {b.bounds(boundSet(root.getAsJsonArray("bounds")));}
+
+    // parameters
+    if (root.has("parameters")){
+      JsonObject par = root.getAsJsonObject("parameters");
+      if (par.has("K")) b.K(arrayD(par.getAsJsonArray("K")));
+      if (par.has("M")) b.M(arrayD(par.getAsJsonArray("M")));
+      if (par.has("C")) b.C(arrayD(par.getAsJsonArray("C")));
+    }
+
+    // sonification_set_up
+    if (root.has("sonification_set_up")){
+      JsonObject su = root.getAsJsonObject("sonification_set_up");
+      if (su.has("acoustic_scaling_factor")) b.acousticScalingFactor(su.get("acoustic_scaling_factor").getAsInt());
+      if (su.has("contributing_pixels")) b.contributingPixels(arrayS(su.getAsJsonArray("contributing_pixels")));
+      if (su.has("stiffnessArray")) b.stiffnessArray(arrayI(su.getAsJsonArray("stiffnessArray")));
+      // drivers/listeners (top-level)
+      if (su.has("drivers")) b.drivers(arrayS(su.getAsJsonArray("drivers")));
+      if (su.has("drivers_ilm")) b.driversILM(arrayS(su.getAsJsonArray("drivers_ilm")));
+      if (su.has("drivers_rpe")) b.driversRPE(arrayS(su.getAsJsonArray("drivers_rpe")));
+      if (su.has("listeners")) b.listeners(arrayS(su.getAsJsonArray("listeners")));
+    }
+
+    if (root.has("global_friction")) b.globalFriction(root.get("global_friction").getAsFloat());
+
+
+    return b;
+  }
+
+  public static Builder fromProcessingJsonFile(Path p) {
+    try (Reader r = Files.newBufferedReader(p)) {
+      JsonObject jo = JsonParser.parseReader(r).getAsJsonObject();
+      return fromProcessingJson(jo);
+    }
+    catch (Exception ex) {
+      throw new RuntimeException("Invalid JSON syntax in " + p + ": " + ex.getMessage(), ex);
+    }
+  }
+
+  // ---------- JSON EXPORT ----------
+  public JsonObject toProcessingJson() {
+    JsonObject root = new JsonObject();
+    root.addProperty("data_dir", dataDir);
+    root.addProperty("use_norm_data", useNormData);
+    root.addProperty("global_friction", globalFriction);
+    root.addProperty("model", modelDim);
+
+    JsonObject g = new JsonObject();
+    g.addProperty("numLayers", numLayers);
+    JsonArray nnpl = new JsonArray();
+    for (int v : numNodesPerLayer) nnpl.add(v);
+    g.add("numNodesPerLayer", nnpl);
+    g.addProperty("distance", dist);
+    g.addProperty("massesRadius", massRadius);
+    g.add("bounds", toJsonArray(bounds));
+    g.addProperty("dy", dimY);
+    g.addProperty("dx", dimX);
+    g.addProperty("dz", dimZ);
+    g.addProperty("interactionType", interactionType != null ? interactionType.name() : "FIRST");
+    root.add("geometry", g);
+
+    JsonObject par = new JsonObject();
+    par.add("K", toJsonArray(K));
+    par.add("M", toJsonArray(M));
+    par.add("C", toJsonArray(C));
+    root.add("parameters", par);
+
+    JsonObject su = new JsonObject();
+    su.addProperty("acoustic_scaling_factor", acousticScalingFactor);
+    su.add("contributing_pixels", toJsonArray(contributingPixels));
+    su.add("stiffnessArray", toJsonArray(stiffnessArray));
+    root.add("sonification_set_up", su);
+
+    // drivers/listeners (top-level)
+    root.add("drivers", toJsonArray(driverNodes));
+    root.add("drivers_ilm", toJsonArray(driverNodes_ILM));
+    root.add("drivers_rpe", toJsonArray(driverNodes_RPE));
+    root.add("listeners", toJsonArray(listenerNodes));
+
+
+    return root;
+  }
+
+  public boolean writeProcessingJson(Path path) {
+    System.out.println("Writing Processing JSON to " + path);
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    try {
+      // Ensure parent dirs exist
+      Path parent = path.getParent();
+      if (parent != null) {
+        Files.createDirectories(parent);
+      }
+      // Write atomically to reduce corruption risk
+      Path tmp = path.resolveSibling(path.getFileName() + ".tmp");
+      try (Writer w = Files.newBufferedWriter(tmp)) {
+        gson.toJson(toProcessingJson(), w);
+      }
+      Files.move(tmp, path, java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
+      return true;
+    } catch (Exception ex) {
+      System.err.println("Failed to write Processing JSON to " + path);
+      ex.printStackTrace();
+      return false;
+    }
+  }
+
+  // ---------- Helpers ----------
+  private static double[] arrayD(JsonArray arr){
+    double[] o = new double[arr.size()];
+    for (int i=0;i<arr.size();i++) o[i] = arr.get(i).getAsDouble();
+    return o;
+  }
+  private static int[] arrayI(JsonArray arr){
+    int[] o = new int[arr.size()];
+    for (int i=0;i<arr.size();i++) o[i] = arr.get(i).getAsInt();
+    return o;
+  }
+  private static int[] arrayDInt(JsonArray arr){
+    int[] o = new int[arr.size()];
+    for (int i=0;i<arr.size();i++) o[i] = arr.get(i).getAsInt();
+    return o;
+  }
+  private static List<String> arrayS(JsonArray arr){
+    List<String> o = new ArrayList<>();
+    for (JsonElement e : arr) o.add(e.getAsString());
+    return o;
+  }
+
+  private static EnumSet<Bound> boundSet(JsonArray arr){
+    EnumSet<Bound> o = EnumSet.noneOf(Bound.class); 
+    for (JsonElement e : arr) o.add(Bound.valueOf(e.getAsString()));
+    return o;
+  }
+  private static JsonArray toJsonArray(double[] a){ JsonArray ja = new JsonArray(); for (double v:a) ja.add(v); return ja; }
+  private static JsonArray toJsonArray(int[] a){ JsonArray ja = new JsonArray(); for (int v:a) ja.add(v); return ja; }
+  private static JsonArray toJsonArray(List<String> a){ JsonArray ja = new JsonArray(); for (String v:a) ja.add(v); return ja; }
+  private static JsonArray toJsonArray(EnumSet<Bound> a){ JsonArray ja = new JsonArray(); for (Bound v:a) ja.add(v.name()); return ja; }
+}

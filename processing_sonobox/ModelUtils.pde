@@ -1,0 +1,259 @@
+ArrayList<String> jsonToList(JSONArray arr) {
+  ArrayList<String> list = new ArrayList<String>();
+  for (int i = 0; i < arr.size(); i++) {
+    list.add(arr.getString(i));
+  }
+  return list;
+}
+
+void subsetsCreation3D(phy3DModel model, ArrayList<String> tissueNodeNames,
+                       int[] nodeCounts, int dimX, int dimZ, ArrayList<String> massSubsetNames) {
+  println("creating MASS SUBSETS::");
+
+  int[] counts = new int[3];
+
+  // Mass Subset Creation
+  for (int t = 0; t < 3; t++) {
+    String[] parts = tissueNodeNames.get(t).split("_");
+    int startX = Integer.parseInt(parts[1]);
+    int startY = Integer.parseInt(parts[2]);
+    int startZ = Integer.parseInt(parts[3]);
+
+    phys.createMassSubset(massSubsetNames.get(t));
+
+    int yStart = startY;
+    int yEnd = 0;
+    for (int i = 0; i <= t; i++) yEnd += nodeCounts[i];
+
+    for (int i = startX; i < dimX; i++) {
+      for (int j = yStart; j < yEnd; j++) {
+        for (int k = startZ; k < dimZ; k++) {
+          String curMass = "m_" + i + "_" + j + "_" + k;
+          phys.addMassToSubset(model.getMass(curMass), massSubsetNames.get(t));
+          counts[t]++;
+        }
+      }
+    }
+
+    println("# " + massSubsetNames.get(t).replace("Masses", " masses") + ": " + counts[t]);
+  }
+
+  // Interaction Subset Creation
+  println("creating interactions' subsets");
+  String[] springSubsetNames = { "firstSprings", "secondSprings", "thirdSprings" };
+  for (String name : springSubsetNames) phys.createInteractionSubset(name);
+
+  int[] springCounts = new int[3];
+  ArrayList<Interaction> interactionList = model.getInteractionList();
+
+  for (Interaction interaction : interactionList) {
+    String[] parts = interaction.getName().split("_");
+    int y2 = Integer.parseInt(parts[5]);
+
+    if (y2 < nodeCounts[0]) {
+      phys.addInteractionToSubset(model.getInteraction(interaction.getName()), springSubsetNames[0]);
+      springCounts[0]++;
+    } else if (y2 < nodeCounts[0] + nodeCounts[1]) {
+      phys.addInteractionToSubset(model.getInteraction(interaction.getName()), springSubsetNames[1]);
+      springCounts[1]++;
+    } else if (y2 < nodeCounts[0] + nodeCounts[1] + nodeCounts[2]) {
+      phys.addInteractionToSubset(model.getInteraction(interaction.getName()), springSubsetNames[2]);
+      springCounts[2]++;
+    }
+  }
+
+  println("first springs: " + springCounts[0]);
+  println("second springs: " + springCounts[1]);
+  println("third springs: " + springCounts[2]);
+}
+
+void tissuePhysicalPropertiesInit(phy3DModel model, double[] nodesM, double[] nodesK, double [] nodesC, ArrayList<String> massSubsets) {
+  // Ensure that we have the same number of nodes for masses and springs, and also match mass subsets
+  if (nodesM.length != nodesK.length || nodesM.length != nodesC.length || nodesM.length != massSubsets.size()) {
+    println("Error: The number of masses (M), spring constants (K), damping (C), and mass subsets do not match.");
+    println("M length: " + nodesM.length + ", K length: " + nodesK.length + ", C length: " + nodesC.length + ", subsets size: " + massSubsets.size());
+
+    return;
+  }
+
+  // Loop over the nodes and apply properties for each layer
+  for (int i = 0; i < nodesM.length; i++) {
+    // Fetch the current mass and stiffness values for this layer
+    float currentM = (float) nodesM[i];
+    float currentK = (float) nodesK[i];
+    float currentC = (float) nodesC[i];
+
+    // Fetch the mass subset name from the list
+    String currentMassSubset = massSubsets.get(i);
+
+    // Print the physical properties being set
+    println("Setting physical properties for layer " + (i + 1) + ": M → " + currentM + " | K → " + currentK + " | C → " + currentC);
+
+    // Apply mass and stiffness to the corresponding subsets
+    phys.setParamForMassSubset(currentMassSubset, param.MASS, currentM);
+    phys.setParamForInteractionSubset(currentMassSubset, param.STIFFNESS, currentK);
+    phys.setParamForInteractionSubset(currentMassSubset, param.DAMPING, currentC);
+  }
+}
+
+void tissueNodesDefinition3D(phy3DModel model, ArrayList<String> tissueNodeNames) {
+  for (String nodeName : tissueNodeNames) {
+    Mass mass = model.getMass(nodeName);
+    mass.setParam(param.RADIUS, 6);
+    println("changing size @ mass name: " + mass.getName());
+  }
+}
+
+ArrayList<String> getMassSubsets(String modelType) {
+  ArrayList<String> massSubsets = new ArrayList<String>();
+  if ("1D".equals(modelType)) {
+    massSubsets.add("firstMasses");
+    massSubsets.add("secondMasses");
+    massSubsets.add("thirdMasses");
+  } else if ("2D".equals(modelType)) {
+    massSubsets.add("firstMasses");
+    massSubsets.add("secondMasses");
+    massSubsets.add("thirdMasses");
+  } else if ("3D".equals(modelType)) {
+    massSubsets.add("firstMasses");
+    massSubsets.add("secondMasses");
+    massSubsets.add("thirdMasses");
+  }
+  return massSubsets;
+}
+
+public static float[] toFloatArray(JSONArray jsonArray) {
+    float[] result = new float[jsonArray.size()];
+    for (int i = 0; i < jsonArray.size(); i++) {
+        Object value = jsonArray.get(i);
+        if (value instanceof Number) {
+            result[i] = ((Number) value).floatValue();
+        } else {
+            throw new IllegalArgumentException("JSONArray contains non-numeric value at index " + i);
+        }
+    }
+    return result;
+}
+
+String getConfig() {
+  String conf_path = System.getenv("BIOSONIX_CONF");
+  
+  // Fallback to default if not set
+  if (conf_path == null) {
+    conf_path = "/tmp/son_config.json";
+    // conf_path = "/Users/luisreyes/Sonify/SonoBox/model_configs/config.json";
+    println("No Config Found: Using " + conf_path);
+
+  }
+  return conf_path;
+}
+
+void resetModel() {
+  if (model != null) {
+    phys.clearModel();
+    model = null;
+  }
+  // We update the config and recreate the model
+  phys.setGlobalFriction(config.globalFriction);
+  createModelFromConfig();
+  resetAudioClient();
+}
+
+void resetConfig() {
+  String absPath = getConfig();
+  println("Loading config from: " + absPath);
+  var cfgBuilder = Phy3DConfig.fromProcessingJsonFile(Paths.get(absPath));
+  config = cfgBuilder.build();
+  phys = new PhysicsContext(44100);
+  phys.setGlobalFriction(config.globalFriction);
+}
+
+// Alias
+void setConfig() {
+  resetConfig();
+}
+
+void createModelFromConfig() {
+  String modelType = config.modelDim; // "1D", "2D", or "3D"
+  println("IMPLEMENTING A "+ modelType +" TOPOLOGY FOR THE SOUND MODEL");
+  int[] nPerLayer = config.numNodesPerLayer; // number of nodes per layer
+  double[] nodeM = config.M;
+  double[] nodeK = config.K;
+  double[] nodeC = config.C;
+  int numNodes = Arrays.stream(nPerLayer).sum(); //Make sure it matches
+
+  ArrayList<String> massSubsets = getMassSubsets(modelType);
+
+  if (nPerLayer.length > 1) {
+    println("with n nodes in the first layer: "+ nPerLayer[0] +" in the second: "+nPerLayer[1]+" in the third: "+nPerLayer[2]);
+  }
+
+  float dist = config.dist;
+  float massesRadius = config.massRadius;
+
+  // Generic dimensions for all model types
+  int dimX = 1, dimZ = 1;
+  if (!"1D".equals(modelType)) {
+    dimX = config.dimX;
+    dimZ = config.dimZ;
+  }
+
+  model = new phy3DModel("BioSonix" + modelType, phys.getGlobalMedium());
+  model.setDim(dimX, numNodes, dimZ, 1);
+  model.setGeometry(1.6);
+  model.setParams(nodeM[0], nodeK[0], nodeC[0]);
+  model.setMassRadius(0.2);
+  model.setModelType(modelType);
+  model.setInteractionType(config.interactionType);
+  for (Bound b : config.bounds) {
+    model.addBoundaryCondition(b);
+  }
+  model.generate();
+  // model.translate(0, -150, 0);
+  model.translate(0,0,0);
+  model.rotate(0,0,0);
+
+  drivers = model.addDrivers(config.driverNodes);
+  listeners = model.addListeners(config.listenerNodes);
+  println("Adding Drivers for ILM and RPE layers");
+  drivers_ILM = model.addDriversTyped(config.driverNodes_ILM, true);
+  drivers_RPE = model.addDriversTyped(config.driverNodes_RPE, false);
+
+  phys.mdl().addPhyModel(model);
+  println("Drivers initialized: " + (drivers != null));
+  println("Listeners initialized: " + (listeners != null));
+  
+  phys.init();
+  
+  controller = new ModelController(
+    config,
+    new ModelController.ResetHook() { public void run() { resetModel(); } },
+    new ModelController.MessageSink() { public void show(String s) { produceRenderedMessage(s); } }
+  );
+  controller.initBaseline(config.numNodesPerLayer);
+  
+}
+
+List<String> shiftNodeName(List<String> nodeNames, String dim) {
+  List<String> shiftedNames = new ArrayList<String>(nodeNames.size());
+  for (String nodeName : nodeNames) {
+    String[] parts = nodeName.split("_");
+    if (parts.length != 4) {
+      shiftedNames.add(nodeName); // ignore unexpected names
+      continue;
+    }
+    int i = Integer.parseInt(parts[1]);
+    int j = Integer.parseInt(parts[2]);
+    int k = Integer.parseInt(parts[3]);
+    if ("X".equals(dim)) {
+      int newI = (i + 1) % config.dimX;
+      shiftedNames.add("m_" + newI + "_" + j + "_" + k);
+    } else if ("Z".equals(dim)) {
+      int newK = (k + 1) % config.dimZ;
+      shiftedNames.add("m_" + i + "_" + j + "_" + newK);
+    } else {
+      shiftedNames.add(nodeName); // no shift if unknown dim
+    }
+  }
+  return shiftedNames;
+}

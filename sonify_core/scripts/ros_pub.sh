@@ -1,0 +1,3 @@
+#!/bin/bash
+python ros_ext/image_pub.py --ros-args -p image_dir:=/Users/luisreyes/Sonify/SonifyOCT/data/raw/Injection01 -p seg_dir:=/Users/luisreyes/Sonify/SonifyOCT/data/raw/Injection01_seg
+# python ros_ext/image_pub.py --ros-args -p image_dir:=/Users/luisreyes/Sonify/SonifyOCT/data/processed/Needle_in_sight/Syntheseyes_31_01_2026/Injection01 -p seg_dir:=/Users/luisreyes/Sonify/SonifyOCT/data/processed/Needle_in_sight/Syntheseyes_31_01_2026/Injection01_segmentation

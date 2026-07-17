@@ -1,0 +1,146 @@
+import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicBoolean;
+import ddf.minim.analysis.FFT;
+// for msg reception
+import java.util.Arrays;
+import java.nio.file.*;
+import oscP5.*;
+import netP5.*;
+OscP5 oscP5;
+int port1DModel = 12001;
+
+// rendering
+import peasy.*;
+PeasyCam cam;
+//int baseFrameRate = 60;
+boolean showInstructions = true;
+
+// minim library for recordings
+import ddf.minim.*;
+import ddf.minim.ugens.*;
+int displayRate = 60;
+Minim minim;
+AudioInput in;
+AudioRecorder recorder;
+boolean recorded;
+AudioOutput out;
+FilePlayer player;
+boolean isRecording = false;
+
+/*  global physical model object : will contain the model and run calculations. */
+import miPhysics.Renderer.*;
+import miPhysics.Engine.*;
+import miPhysics.Engine.Sound.*;
+import miPhysics.Engine.InteractionConstants.*;
+
+PhysicsContext phys;
+PhyModel mdl;
+ModelRenderer renderer;
+miTappedPhyAudioClient audioStreamHandler;
+WavWriter wav;
+miTappedPhyAudioClient.AudioTap recTap;
+Phy3DConfig config; // loading json config parameters
+phy3DModel model;
+ModelController controller;
+
+// physical parameters
+float friction = 0.2;
+float gain = 10;
+
+// baseline parameter storage for stable rescaling
+HashMap<String, Float> baselineStiffness;
+HashMap<String, Float> baselineDamping;
+boolean baselinesInitialized = false;
+
+// generic model creation
+int numNodes; // number of nodes in the y direction -- whole model - 26 for 250 mm  model with 10 mm of distance
+int dx = 3; // number of nodes in the x direction
+int dz = 3; // number of nodes in the z direction
+int distance = 2;
+float massesRadius = 0.5;
+float mass = 0.1;
+float k = 1.5;
+
+
+ArrayList<Driver3D> drivers;
+ArrayList<Driver3D> drivers_ILM;
+ArrayList<Driver3D> drivers_RPE;
+ArrayList<Observer3D> listeners;
+ArrayList<String> tissueNodeNames;
+
+// START TRIGGER RENDERING (for sync)
+String triggerText = "";
+boolean showText = false;
+int textTimer = 0;  // To control how long the text will be shown
+int displayDuration = 1000;  // show text for this duration (ms)
+
+
+void setup() {
+
+  // Screen & Camera
+  size(800, 800, P3D);
+  cam = new PeasyCam(this, 0, 0, 0, 100);  // lookAt center, close distance
+  cam.setMinimumDistance(20);
+  cam.setMaximumDistance(1000);
+  cam.setDistance(80);  // Much closer for full-screen view
+
+  // Physics and config
+  setConfig();
+  
+  // Audio
+  setAudioClient();
+
+  // Create model from config
+  createModelFromConfig();
+  
+  // Reset camera to center on model after creation
+  cam.lookAt(0, 0, 0);
+  cam.setDistance(80);
+  
+  // OSC
+  oscP5 = new OscP5(this, port1DModel);
+
+  // Renderer
+  renderer = new ModelRenderer(this);
+  renderer.displayMasses(true);
+  renderer.setColor(massType.MASS3D, 140, 140, 240);
+  renderer.setColor(interType.SPRINGDAMPER3D, 0, 170, 0, 170);
+  renderer.setStrainGradient(interType.SPRINGDAMPER3D, true, 0.1);
+  renderer.setStrainColor(interType.SPRINGDAMPER3D, 105, 100, 200, 255);
+  // renderer.displayIntersectionVolumes(true);
+  // renderer.displayForceVectors(true);
+  // renderer.setForceVectorScale(1000);
+
+
+  // Rendering rate & text setup
+  frameRate(displayRate);
+  textFont(createFont("Helvetica", 120));
+
+}
+
+void draw() {
+  directionalLight(251, 102, 126, 0, -1, 0);
+  ambientLight(102, 102, 102);
+  background(0);
+  stroke(255);
+  renderer.renderScene(phys);
+
+  // int amplitude_ = -2000;
+  // int subsample_ = 20;
+  // int start = 15;
+  
+  //  for(int i = 0; i < in.left.size()-1; i++)
+  //  {
+  //  line(i / 20 + start, 435 + in.left.get(i)*amplitude_, (i+1)/subsample_ +start, 435 + in.left.get(i+1)*amplitude_);
+  //  line(i / 20 + start, 500 + in.right.get(i)*amplitude_, (i+1)/20 + start, 500 + in.right.get(i+1)*amplitude_);
+  //  }
+
+  // START TRIGGER DISPLAY:: Show the trigger text for a set duration
+  if (showText && millis() - textTimer < displayDuration) {
+    fill(255);
+    textSize(20);
+    text(triggerText, 40, 20);  // Adjusted position and size
+  } else {
+    showText = false;  // Hide the text after the duration
+  }
+}

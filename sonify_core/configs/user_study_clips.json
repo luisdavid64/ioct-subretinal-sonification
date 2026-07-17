@@ -1,0 +1,172 @@
+{
+  "study_metadata": {
+    "total_clips": 22,
+    "total_injections": 11,
+    "run_type_totals": {
+      "ILM_ONLY": 2,
+      "NONE": 1,
+      "BLEB": 3,
+      "RPE": 3,
+      "BLEB_RPE": 2
+    },
+    "generation_seed": 752461433
+  },
+  "CLIPS": [
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_007.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_008.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_004.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_002.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_014.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_019.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_040.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_003.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_021.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_006.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_030.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_007.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_008.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_004.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_002.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_014.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_019.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_040.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_003.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_021.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_006.mp4",
+    "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_030.mp4"
+  ],
+  "CLIP_METADATA": [
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_007.mp4",
+      "run_id": "007",
+      "run_type": "RPE",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_008.mp4",
+      "run_id": "008",
+      "run_type": "RPE",
+      "sonification": "distance_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_004.mp4",
+      "run_id": "004",
+      "run_type": "RPE",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_002.mp4",
+      "run_id": "002",
+      "run_type": "BLEB",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_014.mp4",
+      "run_id": "014",
+      "run_type": "BLEB",
+      "sonification": "distance_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_019.mp4",
+      "run_id": "019",
+      "run_type": "BLEB",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_040.mp4",
+      "run_id": "040",
+      "run_type": "ILM_ONLY",
+      "sonification": "distance_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_003.mp4",
+      "run_id": "003",
+      "run_type": "ILM_ONLY",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_021.mp4",
+      "run_id": "021",
+      "run_type": "BLEB_RPE",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_006.mp4",
+      "run_id": "006",
+      "run_type": "BLEB_RPE",
+      "sonification": "distance_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_030.mp4",
+      "run_id": "030",
+      "run_type": "NONE",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_007.mp4",
+      "run_id": "007",
+      "run_type": "RPE",
+      "sonification": "distance_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_008.mp4",
+      "run_id": "008",
+      "run_type": "RPE",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_004.mp4",
+      "run_id": "004",
+      "run_type": "RPE",
+      "sonification": "distance_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_002.mp4",
+      "run_id": "002",
+      "run_type": "BLEB",
+      "sonification": "distance_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_014.mp4",
+      "run_id": "014",
+      "run_type": "BLEB",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_019.mp4",
+      "run_id": "019",
+      "run_type": "BLEB",
+      "sonification": "distance_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_040.mp4",
+      "run_id": "040",
+      "run_type": "ILM_ONLY",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_003.mp4",
+      "run_id": "003",
+      "run_type": "ILM_ONLY",
+      "sonification": "distance_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_021.mp4",
+      "run_id": "021",
+      "run_type": "BLEB_RPE",
+      "sonification": "distance_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026/injection_006.mp4",
+      "run_id": "006",
+      "run_type": "BLEB_RPE",
+      "sonification": "physics_based"
+    },
+    {
+      "path": "/Users/luisreyes/Sonify/SonifyOCT/utilities/runs/user_study_1/02_09_2026_dist/injection_030.mp4",
+      "run_id": "030",
+      "run_type": "NONE",
+      "sonification": "distance_based"
+    }
+  ]
+}

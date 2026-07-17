@@ -1,0 +1,29 @@
+{
+  "data_dir": "none",
+  "use_norm_data": false,
+  "model": "3D",
+  "global_friction": 0.04,
+  "bounds": ["FIXED_CORNERS"],
+  "geometry": {
+    "numLayers": 1,
+    "numNodesPerLayer" : [16],
+    "distance": 10.0,
+    "massesRadius": 1.5,
+    "dy": 1,
+    "dx": 3,
+    "dz": 1,
+    "interactionType": "SECOND"
+  },
+  "parameters": {
+      "K": [1.4, 1.4, 5.0],
+      "M": [96.15, 96.15, 96.15],
+      "C": [0.01,1,0.5]
+  },
+  "sonification_set_up": {
+    "acoustic_scaling_factor": 3,
+    "contributing_pixels": ["3", "5","7", "10", "11","12", "14","18", "22"],
+    "stiffnessArray": [0,0,0,1,1,1,2,2,2],
+      "drivers": ["m_1_10","m_1_5_0","m_1_7_0","m_1_10_0","m_1_11_0","m_1_12_0", "m_1_14_0", "m_1_18_0","m_1_22_0"],
+      "listeners": ["m_1_4_0","m_1_6_0","m_1_9_0","m_1_13_0", "m_1_16_0", "m_1_20_0"]
+    }
+}

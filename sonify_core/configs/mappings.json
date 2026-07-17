@@ -1,0 +1,84 @@
+{
+    "question_to_sample": {
+        "A1": "002",
+        "A2": "003",
+        "A3": "004",
+        "A4": "006",
+        "A5": "007",
+        "A6": "008",
+        "A7": "014",
+        "A8": "019",
+        "A9": "021",
+        "AA": "030",
+        "B1": "002",
+        "B2": "003",
+        "B3": "004",
+        "B4": "006",
+        "B5": "007",
+        "B6": "008",
+        "B7": "014",
+        "B8": "015",
+        "B9": "021",
+        "BA": "030"
+    },
+    "classification": {
+        "ILM_ONLY" : ["040", "003"],
+        "NONE": ["030"],
+        "BLEB": ["002", "014", "019", "015"],
+        "RPE": ["007", "008", "004"],
+        "BLEB_RPE": ["021"],
+        "RPE_BLEB": ["006"]
+    },
+
+    "classification_depth": {
+        "1": ["030"],
+        "2": [],
+        "3": ["003", "019"],
+        "4": ["002", "014", "015"],
+        "5": ["040"],
+        "6": ["004", "006", "007"],
+        "7": ["008", "016", "021"]
+    },
+    "classification_components": {
+        "ILM": ["002", "003", "004", "006", "007", "008", "014", "015", "019", "021", "040"],
+        "RPE": ["004", "006", "007", "008", "021"],
+        "BLEB": ["002", "006", "014", "015", "019", "021"],
+        "NONE": ["030"]
+    },
+    "answer_classification_to_type":  {
+        "1": "NONE",
+        "2": "ILM_ONLY",
+        "3": "RPE",
+        "4": "BLEB",
+        "5": "RPE_BLEB", 
+        "6": "BLEB_RPE"
+    },
+    "depth_value": {
+        "1" : "Vitreous",
+        "2" : "ILM",
+        "3" : "Upper Retina",
+        "4" : "Middle Retina",
+        "5" : "Lower Retina",
+        "6" : "RPE",
+        "7" : "Sub-RPE"
+    },
+    "musicality": {
+        "1": "Not musical at all",
+        "2": "Casual listener",
+        "3": "Musician"
+    },
+    "preference_map": {
+        "1": "A",
+        "2": "B",
+        "3": "No preference"
+    },
+    "structure_map": {
+        "_01": "BLEB",
+        "_02": "ILM",
+        "_03": "RPE"
+    },
+    "mapping_approach": {
+        "A": "Distance Based",
+        "B": "Physics Based"
+    }
+}
